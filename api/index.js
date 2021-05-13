@@ -7,7 +7,7 @@ const textToSVG = TextToSVG.loadSync();
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     const text = (req.query.text !== undefined) ? req.query.text : 'yo'
     const attributes = { stroke: 'black' , id: 'svg-text'};
     const options = { x: 0, y: 0, fontSize: 350, anchor: 'top', attributes: attributes };
