@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        #img_box {
+            position: relative;
+        }
+
+        p{
+            background: blue;;
+            color:white;
+            font-size: 0.5rem;
+            z-index: 99;
+        }
+
+        path{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h3>Text from Image</h3>
+    <form action="/" method="get">
+        <label for="text">Tulisan</label>
+        <input type="text" name="text" placeholder="text max. 6 huruf" value="<%=text%>">
+        <br>
+
+        <label for="image_size">Ukuran gambar</label>
+        <input type="number" name="image_size" min="10" max="50" placeholder="image_size" value="<%=textOptions.image_size%>">
+        <br>
+
+        <label for="distance_size">Jarak gambar</label>
+        <input type="number" name="distance_size" min="5" max="40" placeholder="distance_size" value="<%=textOptions.distance_size%>">
+
+        <br>
+
+        Gambar:
+        <input type="checkbox" name="images" value="chiki"> 
+        <label for="">chiki</label>
+        <input type="checkbox" name="images" value="kongguan">
+        <label for="">kongguan</label>
+        <input type="checkbox" name="images" value="mie">
+        <label for="">mie</label>
+        <input type="checkbox" name="images" value="tehkotak">
+        <label for="">tehkotak</label>
+        <input type="checkbox" name="images" value="tolakangin">
+        <label for="">tolakangin</label>
+
+        <br>
+        <input type="submit" value="Lihat Hasil">
+    </form>
+
+    
+    <div id="img_box">
+    <%- svgText %>
+    </div>
+    
+    <script>
+
+        let counter = 0
+        const DISTANCE = <%=textOptions.distance_size%>;
+        const IMG_SIZE = <%=textOptions.image_size%>;
+        const IMAGES =  <%- JSON.stringify(imgOptions) %>;
+        const regex = /[A-Z]/g;
+        const rawPath = document.getElementById('svg-text').getAttribute('d')
+        const allPath = rawPath.split(/(?=[A-Z])/g)
+
+        console.table(allPath)
+        
+        let lxPos = 0
+        let lyPos = 0
+        let xPos = 0
+        let yPos = 0
+
+        for (i = 0; i < allPath.length; i++) {
+              let point = allPath[i].split(" ")
+              
+              if (point[0].match(regex)) {
+                switch(point[0].charAt(0)) {
+                    case('M'):
+                        //m is move to, start drawing position
+                        xPos = getPosition(point)['x']
+                        yPos = getPosition(point)['y']
+                        drawImage(xPos, yPos)
+                    break;
+                    case ('L'):
+                        lxPos =  getPosition(point)['x']
+                        lyPos =  getPosition(point)['y']
+
+                        drawInLine(xPos, yPos, lxPos, lyPos)
+
+                        //update global x and y position 
+                            //based on last L pos
+                        xPos = lxPos
+                        yPos = lyPos
+                    break;
+                      case ('Q'):
+                        xPos = getPosition(point)['x']
+                        yPos = getPosition(point)['y']
+                        x2Pos = getPosition(point)['x2']
+                        y2Pos = getPosition(point)['y2']
+                        
+                        drawImage(xPos, yPos)
+                        drawImage(x2Pos, y2Pos)
+                        break;
+                    case ('Z'):
+                        drawImage(xPos, yPos)
+                        continue;
+                    break;
+                    default:
+                        break;
+                }
+
+             }
+        }
+
+        function getPosition(item) {
+            const x = parseFloat(item[0].substring(1))
+            const y = parseFloat(item[1])
+            
+            //if not Q path
+            if (item.length == 2) {
+                return {
+                    x : x,
+                    y : y
+                }
+            }
+
+            //for Q path
+            if (item.length == 4) {
+                const x2 = parseFloat(item[2])
+                const y2 = parseFloat(item[3])
+
+                 return {
+                    x: x,
+                    y: y,
+                    x2: x2,
+                    y2: y2
+                }
+            }
+        }
+
+        function drawInLine(xPos, yPos, lxPos, lyPos) {
+            
+            // 1. Draw vercial line
+            if (lxPos == xPos) {
+                for (let _temp = yPos; lyPos < _temp; _temp -= DISTANCE) {
+                    drawImage(lxPos, _temp)
+                }
+
+                for (let _temp2 = yPos; lyPos > _temp2; _temp2 += DISTANCE) {
+                    drawImage(lxPos, _temp2)
+                }
+            }
+
+            // 2. Draw Horizontal line
+            if (lyPos == yPos) {
+                for (let _temp = xPos; lxPos < _temp; _temp -= DISTANCE) {
+                    drawImage(_temp, lyPos)
+                }
+
+                for (let _temp2 = xPos; lxPos > _temp2; _temp2 += DISTANCE) {
+                    drawImage(_temp2, lyPos)
+                }
+            }
+            
+
+            if(lxPos > xPos && lyPos > yPos) {
+                console.log('biggerrr')
+                let _tempY = yPos
+                for (let _tempX = xPos; lxPos > _tempX; _tempX += DISTANCE) {
+                    _tempY += DISTANCE
+                    if (lyPos > _tempY)
+                        drawImage(_tempX, _tempY)
+                }
+            }
+
+            if (lxPos < xPos && lyPos < yPos) {
+                console.log('smaller')
+                let _tempY = yPos
+                for (let _tempX = xPos; lxPos < _tempX; _tempX -= DISTANCE) {
+                    _tempY -= DISTANCE
+                    if (lyPos < _tempY)
+                        drawImage(_tempX, _tempY)
+                }
+            }
+
+            if (lxPos > xPos && lyPos < yPos) {
+                console.log('big and small')
+                let _tempY = yPos
+                for (let _tempX=xPos; lxPos > _tempX; _tempX+=DISTANCE) {
+                    _tempY -= DISTANCE
+                    if(lyPos < _tempY)
+                        drawImage(_tempX, _tempY)
+                }
+            }
+
+            if (lxPos < xPos && lyPos > yPos) {
+                console.log('small and big')
+
+                let _tempY = yPos
+                for (let _tempX = xPos; lxPos < _tempX; _tempX -= DISTANCE) {
+                    _tempY += DISTANCE
+                     if (lyPos > _tempY)
+                      drawImage(_tempX, _tempY)
+                }
+            }
+        }
+
+        function drawImage(_xPos, _yPos) {
+            const img = document.createElement("img");
+        
+            img.src = getImage();
+
+            img.style.position = "absolute";
+            img.style.width = `${IMG_SIZE}px`
+            img.style.height = `${IMG_SIZE}px`
+            img.style.left = `${_xPos}px`;
+            img.style.top = `${_yPos}px`;
+            // drawMark(_xPos, _yPos)
+            document.getElementById('img_box').appendChild(img)
+        }
+
+        function getImage() {
+            const randomImg = IMAGES[Math.floor(Math.random() * IMAGES.length)];
+            return `/img/${randomImg}.png`
+        }
+
+        //Helper function, not obligated to used
+        //only to show drawing order nr
+        function drawMark(xPos, yPos) {
+                const p = document.createElement("p");
+                p.innerHTML = counter++;
+                p.style.position = "absolute";
+                p.style.left = `${xPos}px`;
+                p.style.top = `${yPos}px`;
+
+                document.getElementById('img_box').appendChild(p)
+        }
+
+    </script>
+</body>
+</html>
