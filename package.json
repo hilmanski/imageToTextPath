@@ -1,0 +1,25 @@
+{
+  "name": "textandimage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "text-to-svg": "^3.1.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hilmanski/imageToTextPath.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hilmanski/imageToTextPath/issues"
+  },
+  "homepage": "https://github.com/hilmanski/imageToTextPath#readme"
+}
