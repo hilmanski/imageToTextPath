@@ -6,6 +6,7 @@ const textToSVG = TextToSVG.loadSync();
 //set view engine
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '..', 'views'));
 
 app.get('/api', (req, res) => {
     const text = (req.query.text !== undefined) ? req.query.text : 'yo'
