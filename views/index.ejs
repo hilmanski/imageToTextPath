@@ -27,20 +27,20 @@
 
     <h3>Text from Image</h3>
     <form action="/api" method="get">
-        <label for="text">Tulisan</label>
+        <label for="text">Text</label>
         <input type="text" name="text" placeholder="text max. 6 huruf" value="<%=text%>">
         <br>
 
-        <label for="image_size">Ukuran gambar</label>
+        <label for="image_size">Image Size</label>
         <input type="number" name="image_size" min="10" max="50" placeholder="image_size" value="<%=textOptions.image_size%>">
         <br>
 
-        <label for="distance_size">Jarak gambar</label>
+        <label for="distance_size">Distance</label>
         <input type="number" name="distance_size" min="5" max="40" placeholder="distance_size" value="<%=textOptions.distance_size%>">
 
         <br>
 
-        Gambar:
+        Images:
         <input type="checkbox" name="images" value="chiki"> 
         <label for="">chiki</label>
         <input type="checkbox" name="images" value="kongguan">
@@ -60,6 +60,10 @@
     <div id="img_box">
     <%- svgText %>
     </div>
+
+    <footer>
+        <a href="https://labs.hilman.space">by @hilmanski</a>
+    </footer>
     
     <script>
 
