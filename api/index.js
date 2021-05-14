@@ -20,8 +20,13 @@ app.get('/api', (req, res) => {
     }
 
     let imgOptions = []
-    if (req.query.images !== undefined) {
-        req.query.images.forEach(img => imgOptions.push(img))
+    const imageQuery = req.query.images
+    if (imageQuery !== undefined) {
+        if (Array.isArray(imageQuery)) {
+            imageQuery.forEach(img => imgOptions.push(img))
+        } else {
+            imgOptions.push(imageQuery)
+        }
     } else
         imgOptions.push('mie')
 
