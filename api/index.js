@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const TextToSVG = require('text-to-svg');
 const textToSVG = TextToSVG.loadSync();
+const path = require('path');
 
 //set view engine
 app.use(express.static("public"));
